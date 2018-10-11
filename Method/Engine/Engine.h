@@ -11,6 +11,7 @@
 #include "ModelSrc/Triangle/Triangle.h"
 #include "World/FloorPlane.h"
 #include "ModelSrc/cube/Cube.h"
+#include "Text/TextChar.h"
 
 class Engine {
 private:

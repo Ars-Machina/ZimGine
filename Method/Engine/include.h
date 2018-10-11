@@ -13,6 +13,8 @@
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <fstream>
 #include <sstream>
 #include <iostream>

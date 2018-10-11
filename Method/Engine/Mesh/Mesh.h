@@ -31,6 +31,7 @@ public:
 	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
 	~Mesh();
 	void Draw(Shader shader);
+	void DrawText(Shader shader);
 private:
 	unsigned int VAO, VBO, EBO;
 	void setupMesh();
