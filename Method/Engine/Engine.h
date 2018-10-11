@@ -1,12 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "GL/glew.h"
-#define GLEW_STATIC
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "include.h"
 #include "Shader/Shader.h"
 #include "Camera/Camera.h"
 #include "Light/DirLight.h"
@@ -16,8 +11,6 @@
 #include "ModelSrc/Triangle/Triangle.h"
 #include "World/FloorPlane.h"
 #include "ModelSrc/cube/Cube.h"
-#include <iostream>
-using namespace std;
 
 class Engine {
 private:

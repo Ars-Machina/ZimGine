@@ -1,15 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "GL/glew.h"
-#define GLEW_STATIC
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include <iostream>
-#include <string>
-#include <vector>
+#include "../include.h"
 #include "..\Shader\Shader.h"
 
 using namespace std;

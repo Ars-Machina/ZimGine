@@ -2,22 +2,11 @@
 #define SHADER_H
 
 
-#include <GL/glew.h>
-#define GLEW_STATIC
-#include <GLFW/glfw3.h>
+#include "../include.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "stb_image.h"
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
-
-using namespace std;
-using namespace glm;
-
-using namespace std;
 
 class Shader {
 public:
@@ -25,10 +14,10 @@ public:
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	Shader();
 	void use();
-	void setBool(const string &name, bool value)const;
-	void setInt(const string &name, int value)const;
-	void setFloat(const string &name, float value)const;
-	void setVec3(const string &name, vec3 value)const;
-	void setMat4(const string &name, mat4 value)const;
+	void setBool(const std::string&, bool);
+	void setInt(const std::string&, int);
+	void setFloat(const std::string&, float);
+	void setVec3(const std::string&, glm::vec3);
+	void setMat4(const std::string&, glm::mat4);
 };
 #endif

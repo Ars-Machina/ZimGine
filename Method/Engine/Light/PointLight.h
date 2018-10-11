@@ -1,12 +1,7 @@
 #ifndef POINTLIGHT_H
 #define POINTLIGHT_H
-#include "GL/glew.h"
-#define GLEW_STATIC
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include <iostream>
+
+#include "../include.h"
 #include "..\Shader\Shader.h"
 
 using namespace std;

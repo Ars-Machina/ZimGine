@@ -81,22 +81,18 @@ void Shader::use() {
 }
 
 //all these methods are meant to modify uniform variables within the GLSL code
-void Shader::setBool(const string &name, bool value) const {
+void Shader::setBool(const string &name, bool value) {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
-
-void Shader::setInt(const string &name, int value) const {
+void Shader::setInt(const string &name, int value) {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
-
-void Shader::setFloat(const string &name, float value) const {
+void Shader::setFloat(const string &name, float value) {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
-
-void Shader::setVec3(const string &name, vec3 value) const {
+void Shader::setVec3(const string &name, vec3 value) {
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
 }
-
-void Shader::setMat4(const string &name, mat4 value) const {
+void Shader::setMat4(const string &name, mat4 value) {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value_ptr(value));
 }

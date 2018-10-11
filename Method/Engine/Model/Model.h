@@ -2,9 +2,6 @@
 #define MODEL_H
 
 #include "..\Mesh\Mesh.h"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
 using namespace Assimp;
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);

@@ -1,17 +1,8 @@
 #ifndef SPOTLIGHT_H
 #define SPOTLIGHT_H
 
-#include "GL/glew.h"
-#define GLEW_STATIC
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "../include.h"
 #include "..\Shader\Shader.h"
-#include <iostream>
-
-using namespace std;
-using namespace glm;
 
 class SpotLight {
 public:

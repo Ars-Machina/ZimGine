@@ -1,7 +1,6 @@
 #include "Engine/Engine.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Engine/Shader/stb_image.h"
-#include <iostream>
 #include "Engine/Model/Model.h"
 #include "Engine/InputMode/InputMode.h"
 #include "Engine/World/Collisions/Collisions.h"
