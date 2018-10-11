@@ -125,6 +125,8 @@
     <None Include="Engine\ModelSrc\crystalsomething.mtl" />
     <None Include="Engine\ModelSrc\cube\cube.stl" />
     <None Include="Engine\ModelSrc\cube\crystal1.3ds" />
+    <None Include="Engine\Shader\textOverlayShaders\text.vs" />
+    <None Include="Engine\Shader\textOverlayShaders\text.fs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\Shader\vertexShader.txt" />
