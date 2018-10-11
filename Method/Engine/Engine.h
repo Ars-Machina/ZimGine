@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include "include.h"
+#include "Text/TextChar.h"
 #include "Shader/Shader.h"
 #include "Camera/Camera.h"
 #include "Light/DirLight.h"

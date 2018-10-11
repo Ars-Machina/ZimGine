@@ -53,7 +53,8 @@ int main() {
 	engine.createShaders();
 	camUser = engine.getCam();
 	Mouse mainMouse = Mouse(engine.getCam());
-	Shader* engineShader = engine.getShader();	
+	Shader* engineShader = engine.getShader();
+	Shader textShader = Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
 	Model* myModel = new Model("Engine/ModelSrc/cyborg/cyborg.obj", 0.5, vec3(-1.0f));
 	DirLight light1 = DirLight();
 	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f));
@@ -73,27 +74,69 @@ int main() {
 	vector<unsigned int> floorInd;
 	vector<Texture> floorTex;
 
-	cout << "Generating Floors...  " << endl;;
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 20; j++) {
-			MeshSegment plane = MeshSegment(vec3(i - 10, 0, j - 10));
-			for (int k = 0; k < plane.getVert().size(); k++) {
-				floorVerts.push_back(plane.getVert()[k]);
+	if (false) {
+		cout << "Generating Floors...  " << endl;;
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				MeshSegment plane = MeshSegment(vec3(i - 10, 0, j - 10));
+				for (int k = 0; k < plane.getVert().size(); k++) {
+					floorVerts.push_back(plane.getVert()[k]);
+				}
+				for (int k = 0; k < plane.getIndex().size(); k++) {
+					floorInd.push_back(plane.getIndex()[k]);
+				}
+				for (int k = 0; k < plane.getTex().size(); k++) {
+					floorTex.push_back(plane.getTex()[k]);
+				}
+				cout << "Plane " << (i * 20) + j << " Added" << endl;
 			}
-			for (int k = 0; k < plane.getIndex().size(); k++) {
-				floorInd.push_back(plane.getIndex()[k]);
-			}
-			for (int k = 0; k < plane.getTex().size(); k++) {
-				floorTex.push_back(plane.getTex()[k]);
-			}
-			cout << "Plane " << (i * 20) + j << " Added" << endl;
 		}
+		floorMesh = Mesh(floorVerts, floorInd, floorTex);
 	}
-	floorMesh = Mesh(floorVerts, floorInd, floorTex);
 	floorVerts.clear();
 	floorInd.clear();
 	floorTex.clear();
 	cout << "Done." << endl;
+
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft)) {
+		cout << "ERROR::FREETYPE: could not init freetype lib" << endl;
+	}
+
+	FT_Face face;
+	if (FT_New_Face(ft, "Engine/fonts/arial.ttf", 0, &face)) {
+		cout << "ERROR::FREETYPE: Failed to load font" << endl;
+	}
+
+	FT_Set_Pixel_Sizes(face, 0, 48);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	for (GLubyte c = 0; c < 128; c++) {
+		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+			cout << "ERROR::FREETYPE: Failed to load Glyph" << endl;
+			continue;
+		}
+		GLuint texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		Character character = {
+			texture, ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+			ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+			face->glyph->advance.x
+		};
+		Characters.insert(pair<GLchar, Character >(c, character));
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
 
 	while (!glfwWindowShouldClose(engine.getWindow())) {
 
@@ -139,7 +182,10 @@ int main() {
 		if (glfwGetKey(engine.getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS) {
 			cube1.setPos(cube1.getPos() - vec3(0.1f));
 		}
+
+		RenderText(textShader, "tuna", 10, 10, 1, vec3(0.5, 1.0, 0.0));
 		
+		engineShader->use();
 		mat4 model = mat4(1.0f);
 		engineShader->setMat4("model", model);
 		floorMesh.Draw(*engineShader);
