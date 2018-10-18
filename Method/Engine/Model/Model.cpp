@@ -28,6 +28,7 @@ void Model::Draw(Shader shader) {
 }
 
 void Model::loadModel(string path) {
+	cout << "loading model " << path << endl;
 	Importer import;
 	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -36,7 +37,6 @@ void Model::loadModel(string path) {
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
-	cout << directory;
 
 	processNode(scene->mRootNode, scene);
 }
@@ -44,7 +44,8 @@ void Model::loadModel(string path) {
 void Model::processNode(aiNode *node, const aiScene *scene) {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(processMesh(mesh, scene));
+		modelMesh = processMesh(mesh, scene);
+		meshes.push_back(modelMesh);
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -106,11 +107,6 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
 		aiString str;
 		mat->GetTexture(type, i, &str);
 		Texture texture;
-		if (str.C_Str() == "") {
-			str = aiString("Brick1.jpg");
-			directory = "Engine/Textures";
-		}
-		cout << str.C_Str() << endl;
 		texture.id = TextureFromFile(str.C_Str(), directory);
 		texture.type = typeName;
 		texture.path = str.C_Str();
@@ -152,7 +148,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 		stbi_image_free(data);
 	}
 	else {
-		cout << "Texture failed to load at path: " << path << endl;
+		cout << "Texture failed to load at path: " << filename << endl;
 		stbi_image_free(data);
 	}
 
@@ -185,4 +181,8 @@ vec3 Model::getPosition() {
 
 vector<Mesh> Model::getMeshes() {
 	return meshes;
+}
+
+Mesh Model::getMesh() {
+	return modelMesh;
 }

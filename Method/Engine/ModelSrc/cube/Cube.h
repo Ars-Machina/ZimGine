@@ -17,6 +17,7 @@ public:
 	void setVelocity(vec3 newV);
 	vec3 getVelocity();
 	vector<Vertex> getVertices();
+	Mesh getMesh();
 private:
 	void setupMesh();
 	float size;

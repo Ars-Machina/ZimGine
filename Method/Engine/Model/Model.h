@@ -19,13 +19,14 @@ public:
 	void setSize(double newSize);
 	double getSize();
 	vector<Mesh> getMeshes();
+	Mesh getMesh();
 private:
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
 	string directory;
 	vec3 position;
 	double size;
-
+	Mesh modelMesh;
 	void loadModel(string path);
 	void processNode(aiNode *node, const aiScene *scene);
 	Mesh processMesh(aiMesh *mesh, const aiScene *scene);

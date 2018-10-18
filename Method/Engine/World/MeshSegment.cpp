@@ -17,7 +17,7 @@ void MeshSegment::setupMesh() {
 	vertices.push_back(v4);
 	indices = {
 		1,2,3,
-		4,2,3
+		1,4,2
 	};
 	Texture tex1;
 	tex1.id = TextureFromFile("crystal1.jpeg", "Engine/World");

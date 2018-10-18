@@ -17,15 +17,23 @@ Engine::Engine() {
 bool Engine::Init(const char* title) {
 
 	//initialize GLFW
-	glfwInit();
+	cout << "Initializing GLFW" << endl;
+	if (!glfwInit()) {
+		cout << "GLFW failed to init" << endl;
+	}
 
 	//set the "settings" for GLFW right after initialization.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	cout << "GLFW_CONTEXT_VERSION_MAJOR = 3" << endl;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	cout << "GLFW_CONTEXT_VERSION_MINOR = 3" << endl;
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	cout << "GLFW_OPENGL_PROFILE = GLFW_OPENGL_COMPAT_PROFILE" << endl;
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	cout << "GLFW_OPENGL_FORWARD_COMPAT = GL_TRUE" << endl;
 
 	//create the window to serve as our context
+	cout << "Creating window" << endl;
 	window = glfwCreateWindow(1400, 900, title, NULL, NULL);
 
 	//error check the window
@@ -51,6 +59,7 @@ bool Engine::Init(const char* title) {
 
 	//how many times per frame the buffers will swap (1 is 1 time per frame)
 	glfwSwapInterval(1);
+	cout << "GLFW swap interval = 1" << endl;
 
 	//initialize glew and enable experimental
 	if (glewInit() == GLEW_OK) {
@@ -69,6 +78,7 @@ bool Engine::Init(const char* title) {
 
 	//depth test
 	glEnable(GL_DEPTH_TEST);
+	cout << "GL_DEPTH_TEST = enabled" << endl;
 
 	return true;
 }

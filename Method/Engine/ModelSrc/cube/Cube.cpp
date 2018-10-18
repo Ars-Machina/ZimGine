@@ -70,3 +70,7 @@ void Cube::setVelocity(vec3 newV) {
 vec3 Cube::getVelocity() {
 	return velocity;
 }
+
+Mesh Cube::getMesh() {
+	return cubeModel.getMesh();
+}

@@ -1,6 +1,7 @@
 #include "Engine/Engine.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Engine/Shader/stb_image.h"
+#include "Engine/Mesh/Mesh.h"
 #include "Engine/Model/Model.h"
 #include "Engine/InputMode/InputMode.h"
 #include "Engine/World/Collisions/Collisions.h"
@@ -11,7 +12,7 @@ using namespace glm;
 
 void processInput(GLFWwindow* window, Camera* cam);
 unsigned int loadTexture(const char *path);
-
+Mesh loadMeshFromFile(const char* fileName);
 
 bool wireframe = false;
 float camSpeed = 0.05f;
@@ -54,64 +55,46 @@ int main() {
 	camUser = engine.getCam();
 	Mouse mainMouse = Mouse(engine.getCam());
 	Shader* engineShader = engine.getShader();
-	Shader textShader = Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
+	Shader* textShader = new Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
 	Model* myModel = new Model("Engine/ModelSrc/cyborg/cyborg.obj", 0.5, vec3(-1.0f));
 	DirLight light1 = DirLight();
 	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f));
 	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f));
 	Cube cube1 = Cube(1, vec3(0.0f));
 	Cube cube2 = Cube(1, vec3(0.0f, 5.0f, 0.0f));
-	FloorPlane plane = FloorPlane(1);
-	Model crystal2 = Model("Engine/ModelSrc/cube/crystal1.3ds", 0.5, vec3(1.0f));
+	cout << "--------------------------------------------" << endl;
+	cout << "THE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE" << endl;
+	cout << "--------------------------------------------" << endl;
+	//FloorPlane plane = FloorPlane(1);
+	//Model crystal2 = Model("Engine/ModelSrc/cube/crystal1.3ds", 0.5, vec3(1.0f));
+	
 
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 
 	vec3 start = camUser->camPos + vec3(10, 0, 10);
 
-	Mesh floorMesh;
-	vector<Vertex> floorVerts;
-	vector<unsigned int> floorInd;
-	vector<Texture> floorTex;
-
-	if (false) {
-		cout << "Generating Floors...  " << endl;;
-		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 20; j++) {
-				MeshSegment plane = MeshSegment(vec3(i - 10, 0, j - 10));
-				for (int k = 0; k < plane.getVert().size(); k++) {
-					floorVerts.push_back(plane.getVert()[k]);
-				}
-				for (int k = 0; k < plane.getIndex().size(); k++) {
-					floorInd.push_back(plane.getIndex()[k]);
-				}
-				for (int k = 0; k < plane.getTex().size(); k++) {
-					floorTex.push_back(plane.getTex()[k]);
-				}
-				cout << "Plane " << (i * 20) + j << " Added" << endl;
-			}
-		}
-		floorMesh = Mesh(floorVerts, floorInd, floorTex);
-	}
-	floorVerts.clear();
-	floorInd.clear();
-	floorTex.clear();
-	cout << "Done." << endl;
-
+	cout << "Initializing FreeType lib" << endl;
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft)) {
 		cout << "ERROR::FREETYPE: could not init freetype lib" << endl;
 	}
-
+	
 	FT_Face face;
 	if (FT_New_Face(ft, "Engine/fonts/arial.ttf", 0, &face)) {
 		cout << "ERROR::FREETYPE: Failed to load font" << endl;
 	}
 
+	Mesh cubeMesh = cube1.getMesh();
+	cubeMesh.SaveToFile("file1.txt");
+
+	Mesh newMesh = loadMeshFromFile("file1.txt");
+
 	FT_Set_Pixel_Sizes(face, 0, 48);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+	cout << "calculating typeface" << endl;
 	for (GLubyte c = 0; c < 128; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			cout << "ERROR::FREETYPE: Failed to load Glyph" << endl;
@@ -138,6 +121,9 @@ int main() {
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
+
+
+	cout << "Done." << endl;
 	while (!glfwWindowShouldClose(engine.getWindow())) {
 
 		//per-frame time
@@ -165,36 +151,13 @@ int main() {
 		light2.Draw(engineShader);
 		light3.DrawLight(engineShader);
 
-		if (glfwGetKey(engine.getWindow(), GLFW_KEY_0) == GLFW_PRESS) {
-			if (cube1.getSize() > 0.1) {
-				cube1.setSize(cube1.getSize() - 0.1);
-			}
-			else {
-				cube1.setSize(0.1);
-			}
-		}
-		if (glfwGetKey(engine.getWindow(), GLFW_KEY_9) == GLFW_PRESS) {
-			cube1.setSize(cube1.getSize() + 0.1);
-		}
-		if (glfwGetKey(engine.getWindow(), GLFW_KEY_UP) == GLFW_PRESS) {
-			cube1.setPos(cube1.getPos() + vec3(0.1f));
-		}
-		if (glfwGetKey(engine.getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-			cube1.setPos(cube1.getPos() - vec3(0.1f));
-		}
-
-		RenderText(textShader, "tuna", 10, 10, 1, vec3(0.5, 1.0, 0.0));
+		textShader->use();
+		//RenderText(*textShader, "tuna", 10, 10, 1, vec3(0.5, 1.0, 0.0));
 		
 		engineShader->use();
 		mat4 model = mat4(1.0f);
 		engineShader->setMat4("model", model);
-		floorMesh.Draw(*engineShader);
-		//cube1.Draw(engineShader);
-		//cube2.Draw(engineShader);
-		//plane.Draw(engineShader);
-		//DoCollisions(cube1, cube2);
-		//crystal2.Draw(*engineShader);
-		//myModel->Draw(*engineShader);
+		newMesh.Draw(*engineShader);
 		//ending render
 		engine.EndRender();
 	}
@@ -350,4 +313,113 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 	if (mouseMode == CURSOR_SHOW) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
+}
+
+Mesh loadMeshFromFile(const char* fileName) {
+	cout << "loading " << fileName << endl;
+	ifstream inputFile;
+	inputFile.open(fileName);
+	char label;
+	char data[512];
+	Vertex v;
+	Texture t;
+	vector<Vertex> vertexs;
+	vector<unsigned int> indexs;
+	vector<Texture> texs;
+	vector<int> index;
+	int vertexDataNum = 1;
+	string value;
+	label = inputFile.get();
+	while (!inputFile.eof()) {
+		if (label == 'v') {
+			inputFile.getline(data, 512);
+			for (int i = 0; i < sizeof(data); i++) {
+				if (data[i] == '{') {}
+				else {
+					if (data[i] == ',' || data[i] == '}') {
+						switch (vertexDataNum) {
+						case 1: v.Position.x = stof(value);
+						case 2: v.Position.y = stof(value);
+						case 3: v.Position.z = stof(value);
+						case 4: v.Normal.x = stof(value);
+						case 5: v.Normal.y = stof(value);
+						case 6: v.Normal.z = stof(value);
+						case 7: v.Bitangent.x = stof(value);
+						case 8: v.Bitangent.y = stof(value);
+						case 9: v.Bitangent.z = stof(value);
+						case 10: v.Tangent.x = stof(value);
+						case 11: v.Tangent.y = stof(value);
+						case 12: v.Tangent.z = stof(value);
+						case 13: v.TexCoords.x = stof(value);
+						case 14: v.TexCoords.y = stof(value);
+						}
+						vertexDataNum++;
+						value = "";
+						if (data[i] == '}') {
+							vertexs.push_back(v);
+							break;
+						}
+					}
+					else {
+						value += data[i];
+					}
+				}
+			}
+			label = inputFile.get();
+		}
+		if (label == 'i') {
+			int indexFileNum = 1;
+			inputFile.getline(data, 512);
+			for (int i = 0; i < sizeof(data); i++) {
+				if (data[i] == '{') {}
+				else {
+					if (data[i] == ',' || data[i] == '}') {
+						switch (indexFileNum) {
+						case 1: indexs.push_back(stoi(value));
+						case 2: indexs.push_back(stoi(value));
+						case 3: indexs.push_back(stoi(value));
+						}
+						indexFileNum++;
+						value = "";
+						if (data[i] == '}') {
+							break;
+						}
+					}
+					else {
+						value += data[i];
+					}
+				}
+			}
+			label = inputFile.get();
+		}
+		if (label == 't') {
+			int textureFileNum = 1;
+			inputFile.getline(data, 512);
+			for (int i = 0; i < sizeof(data); i++) {
+				if (data[i] == '{') {
+				}
+				else {
+					if (data[i] == ',' || data[i] == '}') {
+						switch (textureFileNum) {
+						case 1: t.id = stoi(value);
+						case 2: t.path = value;
+						case 3: t.type = value;
+						}
+						textureFileNum++;
+						value = "";
+						if (data[i] == '}') {
+							texs.push_back(t);
+							break;
+						}
+					}
+					else {
+						value += data[i];
+					}
+				}
+			}
+			label = inputFile.get();
+		}
+	}
+	cout << "Done." << endl;
+	return Mesh(vertexs, indexs, texs);
 }
