@@ -8,7 +8,6 @@ GLFW swap interval = 1
 Glew has initialized
 GL_DEPTH_TEST = enabled
 loading model Engine/ModelSrc/cyborg/cyborg.obj
-ERROR::ASSIMP::Unable to open file "Engine/ModelSrc/cyborg/cyborg.obj".
 loading model Engine/Modelsrc/cube/cube.3ds
 loading model Engine/Modelsrc/cube/cube.3ds
 loading model Engine/Modelsrc/cube/cube.3ds
@@ -16,10 +15,4 @@ loading model Engine/Modelsrc/cube/cube.3ds
 --------------------------------------------
 THE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE
 --------------------------------------------
-loading cyborg.txt
-Done in 1.78022 seconds
 Done.
-Mouse Mode: Cursor Mode
-Keyboard Mode: text input
-Mouse Mode: Camera Movement
-Keyboard Mode: Camera Movement

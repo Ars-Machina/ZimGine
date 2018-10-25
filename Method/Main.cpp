@@ -61,8 +61,8 @@ int main() {
 	Shader* textShader = new Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
 	Model* myModel = new Model("Engine/ModelSrc/cyborg/cyborg.obj", 0.5, vec3(-1.0f));
 	DirLight light1 = DirLight();
-	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f), 1);
-	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f), 1);
+	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f), 0);
+	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f), 0);
 	Cube cube1 = Cube(1, vec3(0.0f));
 	Cube cube2 = Cube(1, vec3(0.0f, 5.0f, 0.0f));
 	cout << "--------------------------------------------" << endl;
@@ -77,9 +77,9 @@ int main() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	Mesh cyborgMesh = loadMeshFromFile("cyborg.txt");
+	//Mesh cyborgMesh = loadMeshFromFile("cyborg.txt");
 	//cyborgMesh.SaveToFile("cyborg2.txt");
-	setupText();
+	//setupText();
 	cout << "Done." << endl;
 	logFile << "Done." << endl;
 	while (!glfwWindowShouldClose(engine.getWindow())) {
@@ -96,9 +96,7 @@ int main() {
 		engine.BeginRender(worldColor);
 
 		engineShader->use();
-
 		light2.setPosition(vec3(cos(currentFrame) / 2, 0.0f, sin(currentFrame) / 2));
-
 		light3.setPosition(camUser->camPos);
 		light3.setDirection(camUser->camFront);
 		engineShader->setFloat("material.shininess",512.0f);
@@ -108,13 +106,12 @@ int main() {
 		light2.Draw(engineShader);
 		light3.DrawLight(engineShader);
 
-		textShader->use();
-		RenderText(*textShader, "tuna", 0.5, 0.5, 1, vec3(0.5, 1.0, 0.0));
+		//textShader->use();
+		//RenderText(*textShader, "cube lmaoooooooo", 0.5, 0.5, 1, vec3(0.5, 1.0, 0.0));
 		
 		engineShader->use();
-		mat4 model = mat4(1.0f);
-		engineShader->setMat4("model", model);
-		cyborgMesh.Draw(*engineShader);
+		//cube1.Draw(engineShader);
+		myModel->Draw(*engineShader);
 		//ending render
 		engine.EndRender();
 	}
