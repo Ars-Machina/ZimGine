@@ -1,7 +1,8 @@
 #include "PointLight.h"
 
-PointLight::PointLight(vec3 pos) {
+PointLight::PointLight(vec3 pos, int id) {
 	position = pos;
+	this->id = id;
 	setup();
 }
 
@@ -26,15 +27,25 @@ void PointLight::setup() {
 }
 
 void PointLight::Draw(Shader* shader) {
+	string idStr = to_string(id);
+	string plBase = string("pointLight[");
+	string plEnd = string("].");
+	string plPos = string("position");
+	string plAmb = string("ambient");
+	string plDif = string("diffuse");
+	string plSpec = string("specular");
+	string plConst = string("constant");
+	string plLin = string("linear");
+	string plQuad = string("quadratic");
 
 	shader->use();
-	shader->setVec3("pointLight.position", position);
-	shader->setVec3("pointLignt.ambient", vec3(0.2f, 0.2f, 0.2f));
-	shader->setVec3("pointLight.diffuse", vec3(0.5f, 0.5f, 0.5f));
-	shader->setVec3("pointLight.specular", vec3(1.0f, 0.5f, 0.31f));
-	shader->setFloat("pointLight.constant", 1.0f);
-	shader->setFloat("pointLight.linear", 0.09f);
-	shader->setFloat("pointLight.quadratic", 0.032f);
+	shader->setVec3((plBase + idStr + plEnd + plPos), position);
+	shader->setVec3((plBase + idStr + plEnd + plAmb), vec3(0.2f, 0.2f, 0.2f));
+	shader->setVec3((plBase + idStr + plEnd + plDif), vec3(0.5f, 0.5f, 0.5f));
+	shader->setVec3((plBase + idStr + plEnd + plSpec), vec3(1.0f, 0.5f, 0.31f));
+	shader->setFloat((plBase + idStr + plEnd + plConst), 1.0f);
+	shader->setFloat((plBase + idStr + plEnd + plLin), 0.09f);
+	shader->setFloat((plBase + idStr + plEnd + plQuad), 0.032f);
 	
 	
 }

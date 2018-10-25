@@ -1,13 +1,19 @@
 #include "Engine.h"
+#include "ExternVar.h"
 
 using namespace glm;
+using namespace externals;
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
+	cout << "Viewport Dimensions" << endl;
+	cout << "width: " << width << " height: " << height << endl;
+	windowWidth = width;
+	windowHeight = height;
+	glViewport(0, 0, windowWidth, windowHeight);
 }
 
 Engine::Engine() {
@@ -15,30 +21,40 @@ Engine::Engine() {
 }
 
 bool Engine::Init(const char* title) {
-
+	extern ofstream logFile;
+	windowHeight = 900;
+	windowWidth = 1400;
 	//initialize GLFW
 	cout << "Initializing GLFW" << endl;
+	logFile << "Initializiing GLFW" << endl;
 	if (!glfwInit()) {
 		cout << "GLFW failed to init" << endl;
+		logFile << "GLFW failed to init" << endl;
 	}
 
 	//set the "settings" for GLFW right after initialization.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	cout << "GLFW_CONTEXT_VERSION_MAJOR = 3" << endl;
+	logFile << "GLFW_CONTEXT_VERSION_MAJOR = 3" << endl;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	cout << "GLFW_CONTEXT_VERSION_MINOR = 3" << endl;
+	logFile << "GLFW_CONTEXT_VERSION_MINOR = 3" << endl;
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 	cout << "GLFW_OPENGL_PROFILE = GLFW_OPENGL_COMPAT_PROFILE" << endl;
+	logFile << "GLFW_OPENGL_PROFILE = GLFW_OPENGL_COMPAT_PROFILE" << endl;
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	cout << "GLFW_OPENGL_FORWARD_COMPAT = GL_TRUE" << endl;
+	logFile << "GLFW_OPENGL_FORWARD_COMPAT = GL_TRUE" << endl;
 
 	//create the window to serve as our context
 	cout << "Creating window" << endl;
+	logFile << "Creating window" << endl;
 	window = glfwCreateWindow(1400, 900, title, NULL, NULL);
 
 	//error check the window
 	if (window == nullptr) {
 		cout << "Window failed to initialize" << endl;
+		logFile << "Window failed to initialize" << endl;
 		return false;
 	}
 
@@ -52,7 +68,7 @@ bool Engine::Init(const char* title) {
 	mainMouse = new Mouse(camera);
 
 	//create an internal viewport based on pixel sizes
-	glViewport(0, 0, 1400, 900);
+	glViewport(0, 0, windowWidth, windowHeight);
 
 	//a callback to change the framebuffer as the window is resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -60,10 +76,12 @@ bool Engine::Init(const char* title) {
 	//how many times per frame the buffers will swap (1 is 1 time per frame)
 	glfwSwapInterval(1);
 	cout << "GLFW swap interval = 1" << endl;
+	logFile << "GLFW swap interval = 1" << endl;
 
 	//initialize glew and enable experimental
 	if (glewInit() == GLEW_OK) {
 		cout << "Glew has initialized" << endl;
+		logFile << "Glew has initialized" << endl;
 	}
 	glewExperimental = true;
 
@@ -79,6 +97,7 @@ bool Engine::Init(const char* title) {
 	//depth test
 	glEnable(GL_DEPTH_TEST);
 	cout << "GL_DEPTH_TEST = enabled" << endl;
+	logFile << "GL_DEPTH_TEST = enabled" << endl;
 
 	return true;
 }

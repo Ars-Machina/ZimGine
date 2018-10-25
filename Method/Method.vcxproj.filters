@@ -60,6 +60,9 @@
     <ClCompile Include="Engine\Text\TextChar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\externVar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Engine.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Text\TextChar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ExternVar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

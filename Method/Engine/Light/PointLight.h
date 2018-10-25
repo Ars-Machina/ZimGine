@@ -9,13 +9,14 @@ using namespace glm;
 
 class PointLight {
 public:
-	PointLight(vec3 pos);
+	PointLight(vec3 pos, int id);
 	void Draw(Shader* shader);
 	void Draw2(Shader* shader, mat4 view, mat4 projection, mat4 model);
 	unsigned int getVAO();
 	void setPosition(vec3 pos);
 private:
 	unsigned int VAO, VBO;
+	int id;
 	void setup();
 	vec3 position;
 };

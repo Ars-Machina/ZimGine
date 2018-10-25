@@ -68,7 +68,7 @@ void Mesh::Draw(Shader shader) {
 			number = to_string(heightNr++);
 		}
 
-		shader.setFloat(("material." + name + number).c_str(), i);
+		shader.setFloat(("material." + name + number).c_str(), (float)i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	glActiveTexture(GL_TEXTURE0);
@@ -85,15 +85,15 @@ void Mesh::DrawText(Shader shader) {
 void Mesh::SaveToFile(const char* fileName) {
 	ofstream outputFile;
 	outputFile.open(fileName);
-	for (int i = 0; i < vertices.size(); i++) {
+	for (unsigned int i = 0; i < vertices.size(); i++) {
 		outputFile << "v{" << vertices[i].Position.x << "," << vertices[i].Position.y << "," << vertices[i].Position.z << "," <<
 			vertices[i].Normal.x << "," << vertices[i].Normal.y << "," << vertices[i].Normal.z << "," << vertices[i].Bitangent.x << "," << vertices[i].Bitangent.y << "," << vertices[i].Bitangent.z << "," <<
 			vertices[i].Tangent.x << "," << vertices[i].Tangent.y << "," << vertices[i].Tangent.z << "," << vertices[i].TexCoords.x << "," << vertices[i].TexCoords.y << "}" << endl;
 	}
-	for (int i = 0; i < indices.size()-2; i++) {
-		outputFile << "i{" << indices[i] << "," << indices[i + 1] << "," << indices[i + 2] << "}" << endl;
+	for (unsigned int i = 0; i < indices.size(); i = i+3) {
+		outputFile << "i{" << indices[i] << "," << indices[i+1] << "," << indices[i+2] << "}" << endl;
 	}
-	for (int i = 0; i < textures.size(); i++) {
+	for (unsigned int i = 0; i < textures.size(); i++) {
 		outputFile << "t{" << textures[i].id << "," << textures[i].path << "," << textures[i].type << "}" << endl;
 	}
 	outputFile.close();

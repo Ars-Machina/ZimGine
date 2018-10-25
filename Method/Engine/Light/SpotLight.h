@@ -6,14 +6,14 @@
 
 class SpotLight {
 public:
-	SpotLight(vec3 pos, vec3 dir);
+	SpotLight(vec3 pos, vec3 dir, unsigned int newID);
 	void DrawObject(Shader* shader, mat4 view, mat4 projection, mat4 model);
 	void DrawLight(Shader* shader);
 	void setPosition(vec3 pos);
 	void setDirection(vec3 dir);
 private:
 	void setup();
-	unsigned int VAO, VBO;
+	unsigned int VAO, VBO, id;
 	vec3 position, direction;
 };
 

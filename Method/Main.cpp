@@ -6,9 +6,11 @@
 #include "Engine/InputMode/InputMode.h"
 #include "Engine/World/Collisions/Collisions.h"
 #include "Engine/World/MeshSegment.h"
+#include "Engine/ExternVar.h"
 
 using namespace std;
 using namespace glm;
+using namespace externals;
 
 void processInput(GLFWwindow* window, Camera* cam);
 unsigned int loadTexture(const char *path);
@@ -44,11 +46,12 @@ int i = 0;
 
 
 int main() {
-	
+	logFile.open("logFile.txt");
 	Engine engine = Engine();
 	bool initialized = engine.Init("title");
 	if (initialized == false) {
 		cout << "Engine Not Initialized" << endl;
+		logFile << "Engine Not Initialized" << endl;
 		return -1;
 	}
 	engine.createShaders();
@@ -58,80 +61,34 @@ int main() {
 	Shader* textShader = new Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
 	Model* myModel = new Model("Engine/ModelSrc/cyborg/cyborg.obj", 0.5, vec3(-1.0f));
 	DirLight light1 = DirLight();
-	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f));
-	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f));
+	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f), 1);
+	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f), 1);
 	Cube cube1 = Cube(1, vec3(0.0f));
 	Cube cube2 = Cube(1, vec3(0.0f, 5.0f, 0.0f));
 	cout << "--------------------------------------------" << endl;
 	cout << "THE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE" << endl;
 	cout << "--------------------------------------------" << endl;
-	//FloorPlane plane = FloorPlane(1);
-	//Model crystal2 = Model("Engine/ModelSrc/cube/crystal1.3ds", 0.5, vec3(1.0f));
-	
+	logFile << "--------------------------------------------\nTHE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE\n--------------------------------------------" << endl;
 
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+	/*cout << "saving cyborg.obj to txt file" << endl;
+	myModel->getMesh().SaveToFile("cyborg.txt");
+	cout << "done" << endl;*/
 
-	vec3 start = camUser->camPos + vec3(10, 0, 10);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
-	cout << "Initializing FreeType lib" << endl;
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft)) {
-		cout << "ERROR::FREETYPE: could not init freetype lib" << endl;
-	}
-	
-	FT_Face face;
-	if (FT_New_Face(ft, "Engine/fonts/arial.ttf", 0, &face)) {
-		cout << "ERROR::FREETYPE: Failed to load font" << endl;
-	}
-
-	Mesh cubeMesh = cube1.getMesh();
-	cubeMesh.SaveToFile("file1.txt");
-
-	Mesh newMesh = loadMeshFromFile("file1.txt");
-
-	FT_Set_Pixel_Sizes(face, 0, 48);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	cout << "calculating typeface" << endl;
-	for (GLubyte c = 0; c < 128; c++) {
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-			cout << "ERROR::FREETYPE: Failed to load Glyph" << endl;
-			continue;
-		}
-		GLuint texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		Character character = {
-			texture, ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-			ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-			face->glyph->advance.x
-		};
-		Characters.insert(pair<GLchar, Character >(c, character));
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
-
-
-
+	Mesh cyborgMesh = loadMeshFromFile("cyborg.txt");
+	//cyborgMesh.SaveToFile("cyborg2.txt");
+	setupText();
 	cout << "Done." << endl;
+	logFile << "Done." << endl;
 	while (!glfwWindowShouldClose(engine.getWindow())) {
 
 		//per-frame time
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		double currentFrame = glfwGetTime();
+		deltaTime = (float)currentFrame - lastFrame;
+		lastFrame = (float)currentFrame;
 
-		vec3 start = camUser->camPos;
 		//processing input and beginning the render
 		engine.setShaderMains(camUser, engineShader);
 		processInput(engine.getWindow(), camUser);
@@ -152,12 +109,12 @@ int main() {
 		light3.DrawLight(engineShader);
 
 		textShader->use();
-		//RenderText(*textShader, "tuna", 10, 10, 1, vec3(0.5, 1.0, 0.0));
+		RenderText(*textShader, "tuna", 0.5, 0.5, 1, vec3(0.5, 1.0, 0.0));
 		
 		engineShader->use();
 		mat4 model = mat4(1.0f);
 		engineShader->setMat4("model", model);
-		newMesh.Draw(*engineShader);
+		cyborgMesh.Draw(*engineShader);
 		//ending render
 		engine.EndRender();
 	}
@@ -174,12 +131,14 @@ void processInput(GLFWwindow* window, Camera* cam) {
 				wireframe = true;
 				alreadyPressed = true;
 				cout << "Wireframe enabled" << endl;
+				logFile << "Wireframe enabled" << endl;
 			}
 			else {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				wireframe = false;
 				alreadyPressed = true;
 				cout << "wireframe disabled" << endl;
+				logFile << "wireframe disabled" << endl;
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
@@ -201,10 +160,10 @@ void processInput(GLFWwindow* window, Camera* cam) {
 			glfwSetWindowShouldClose(window, true);
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-			camSpeed = 0.15;
+			camSpeed = (float)0.15;
 		}
 		else {
-			camSpeed = 0.05;
+			camSpeed = (float)0.05;
 		}
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			if (worldColor.x < 1) {
@@ -220,6 +179,8 @@ void processInput(GLFWwindow* window, Camera* cam) {
 			tabPressed = true;
 			cout << "Mouse Mode: Cursor Mode" << endl;
 			cout << "Keyboard Mode: text input" << endl;
+			logFile << "Mouse Mode: Cursor Mode" << endl;
+			logFile << "Keyboard Mode: text input" << endl;
 			keyboardMode = TEXT_INPUT;
 			mouseMode = CURSOR_SHOW;
 		}
@@ -232,6 +193,8 @@ void processInput(GLFWwindow* window, Camera* cam) {
 			tabPressed = true;
 			cout << "Mouse Mode: Camera Movement" << endl;
 			cout << "Keyboard Mode: Camera Movement" << endl;
+			logFile << "Mouse Mode: Camera Movement" << endl;
+			logFile << "Keyboard Mode: Camera Movement" << endl;
 			keyboardMode = CAMERA_TRANSLATE;
 			mouseMode = CAMERA_MOVE;
 		}
@@ -286,6 +249,7 @@ unsigned int loadTexture(char const * path)
 	else
 	{
 		std::cout << "Texture failed to load at path: " << path << std::endl;
+		logFile << "Texture failed to load at path: " << path << endl;
 		stbi_image_free(data);
 	}
 
@@ -297,16 +261,16 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		if (firstMouse)
 		{
-			lastX = xPos;
-			lastY = yPos;
+			lastX = (float)xPos;
+			lastY = (float)yPos;
 			firstMouse = false;
 		}
 
-		float xoffset = xPos - lastX;
-		float yoffset = lastY - yPos; // reversed since y-coordinates go from bottom to top
+		float xoffset = (float)xPos - lastX;
+		float yoffset = lastY - (float)yPos; // reversed since y-coordinates go from bottom to top
 
-		lastX = xPos;
-		lastY = yPos;
+		lastX = (float)xPos;
+		lastY = (float)yPos;
 
 		camUser->processMouseMovement(xoffset, yoffset);
 	}
@@ -317,6 +281,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 
 Mesh loadMeshFromFile(const char* fileName) {
 	cout << "loading " << fileName << endl;
+	logFile << "loading " << fileName << endl;
 	ifstream inputFile;
 	inputFile.open(fileName);
 	char label;
@@ -330,7 +295,9 @@ Mesh loadMeshFromFile(const char* fileName) {
 	int vertexDataNum = 1;
 	string value;
 	label = inputFile.get();
+	double timeTaken;
 	while (!inputFile.eof()) {
+		timeTaken = glfwGetTime();
 		if (label == 'v') {
 			inputFile.getline(data, 512);
 			for (int i = 0; i < sizeof(data); i++) {
@@ -420,6 +387,7 @@ Mesh loadMeshFromFile(const char* fileName) {
 			label = inputFile.get();
 		}
 	}
-	cout << "Done." << endl;
+	cout << "Done in "<<timeTaken<<" seconds" << endl;
+	logFile << "Done in " << timeTaken << " seconds" << endl;
 	return Mesh(vertexs, indexs, texs);
 }

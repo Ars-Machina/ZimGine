@@ -1,4 +1,7 @@
 #include "Model.h"
+#include "../ExternVar.h"
+
+using namespace externals;
 
 
 Model::Model(const char *path) {
@@ -20,7 +23,7 @@ Model::~Model() {
 
 void Model::Draw(Shader shader) {
 	mat4 model = mat4(1.0f);
-	model = scale(model, vec3(size));
+	model = scale(model, vec3((float)size));
 	model = translate(model, position);
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].Draw(shader);
@@ -29,11 +32,13 @@ void Model::Draw(Shader shader) {
 
 void Model::loadModel(string path) {
 	cout << "loading model " << path << endl;
+	logFile << "loading model " << path << endl;
 	Importer import;
 	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+		logFile << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
@@ -149,6 +154,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 	}
 	else {
 		cout << "Texture failed to load at path: " << filename << endl;
+		logFile << "Texture failed to load at path: " << filename << endl;
 		stbi_image_free(data);
 	}
 

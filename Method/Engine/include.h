@@ -3,7 +3,6 @@
 
 #include "GL/glew.h"
 #define GLEW_STATIC
-#include "Shader/Shader.h"
 #include "Shader/stb_image.h"
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"

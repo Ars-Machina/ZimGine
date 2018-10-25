@@ -1,8 +1,9 @@
 #include "SpotLight.h"
 
-SpotLight::SpotLight(vec3 pos, vec3 dir) {
+SpotLight::SpotLight(vec3 pos, vec3 dir, unsigned int newID) {
 	direction = dir;
 	position = pos;
+	id = newID;
 	setup();
 }
 
@@ -27,17 +28,31 @@ void SpotLight::setup() {
 }
 
 void SpotLight::DrawLight(Shader* shader) {
+	string slId = to_string(id);
+	string slBase = string("spotLight[");
+	string slEnd = string("].");
+	string slPos = string("position");
+	string slDir = string("direction");
+	string slCO = string("cutoff");
+	string slOCO = string("outerCutOff");
+	string slConst = string("constant");
+	string slLin = string("linear");
+	string slQuad = string("quadratic");
+	string slAmb = string("ambient");
+	string slDif = string("diffuse");
+	string slSpec = string("specular");
+	string slStart = slBase + slId + slEnd;
 	shader->use();
-	shader->setVec3("spotLight.position", position);
-	shader->setVec3("spotLight.direction", direction);
-	shader->setFloat("spotLight.cutOff", cos(radians(12.5f)));
-	shader->setFloat("spotLight.outerCutOff", cos(radians(17.5f)));
-	shader->setFloat("spotLight.constant", 1.0f);
-	shader->setFloat("spotLight.linear", 0.09f);
-	shader->setFloat("spotLight.quadratic", 0.032f);
-	shader->setVec3("spotLight.ambient", vec3(0.2f, 0.2f, 0.2f));
-	shader->setVec3("spotLight.diffuse", vec3(0.5f, 0.5f, 0.5f));
-	shader->setVec3("spotLight.specular", vec3(1.0f, 0.5f, 0.31f));
+	shader->setVec3((slStart+slPos), position);
+	shader->setVec3((slStart+slDir), direction);
+	shader->setFloat((slStart+slCO), cos(radians(12.5f)));
+	shader->setFloat((slStart+slOCO), cos(radians(17.5f)));
+	shader->setFloat((slStart+slConst), 1.0f);
+	shader->setFloat((slStart+slLin), 0.09f);
+	shader->setFloat((slStart+slQuad), 0.032f);
+	shader->setVec3((slStart+slAmb), vec3(0.2f, 0.2f, 0.2f));
+	shader->setVec3((slStart + slDif) , vec3(0.5f, 0.5f, 0.5f));
+	shader->setVec3((slStart+slSpec), vec3(1.0f, 0.5f, 0.31f));
 }
 
 void SpotLight::DrawObject(Shader* shader, mat4 view, mat4 projection, mat4 model) {

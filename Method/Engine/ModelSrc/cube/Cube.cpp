@@ -30,7 +30,7 @@ void Cube::Draw(Shader* shader) {
 		position.y = -5;
 	}
 	else {
-		velocity.y += getVelocityFunc(time) / 10000;
+		velocity.y += (float)(getVelocityFunc(time) / 10000);
 		position.y += velocity.y;
 	}
 	shader->setMat4("model", model);
@@ -55,8 +55,8 @@ void Cube::setPos(vec3 newPos) {
 
 vector<Vertex> Cube::getVertices() {
 	vector<Vertex> vertices;
-	for (int i = 0; i < cubeModel.getMeshes().size(); i++) {
-		for (int j = 0; j < cubeModel.getMeshes()[i].vertices.size(); j++) {
+	for (unsigned int i = 0; i < cubeModel.getMeshes().size(); i++) {
+		for (unsigned int j = 0; j < cubeModel.getMeshes()[i].vertices.size(); j++) {
 			vertices.push_back(cubeModel.getMeshes()[i].vertices[j]);
 		}
 	}
