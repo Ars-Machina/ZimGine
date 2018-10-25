@@ -10,7 +10,6 @@
 
 using namespace std;
 using namespace glm;
-using namespace externals;
 
 void processInput(GLFWwindow* window, Camera* cam);
 unsigned int loadTexture(const char *path);
@@ -43,6 +42,7 @@ bool alreadyPressed = false;
 bool tabPressed = false;
 vector<MeshSegment> floors;
 int i = 0;
+ofstream logFile;
 
 
 int main() {

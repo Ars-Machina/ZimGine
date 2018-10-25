@@ -1,7 +1,6 @@
 #include "Model.h"
 #include "../ExternVar.h"
 
-using namespace externals;
 
 
 Model::Model(const char *path) {

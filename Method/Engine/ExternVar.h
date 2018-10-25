@@ -5,10 +5,8 @@
 #include <fstream>
 using namespace std;
 
-namespace externals {
-	extern int windowHeight;
-	extern int windowWidth;
-	extern ofstream logFile;
-}
+extern int windowHeight;
+extern int windowWidth;
+extern ofstream logFile;
 
 #endif

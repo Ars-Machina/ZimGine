@@ -1,6 +1,7 @@
 #include "TextChar.h"
-using namespace textVAO;
 
+unsigned int tVAO;
+unsigned int tVBO;
 
 void RenderText(Shader &shader, string text, GLfloat x, GLfloat y, GLfloat scale, vec3 color) {
 	shader.use();
@@ -32,6 +33,7 @@ void RenderText(Shader &shader, string text, GLfloat x, GLfloat y, GLfloat scale
 		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, tVBO);
+		glBindVertexArray(tVAO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -93,5 +95,6 @@ void setupText() {
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
 	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }

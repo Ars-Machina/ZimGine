@@ -2,8 +2,9 @@
 #include "ExternVar.h"
 
 using namespace glm;
-using namespace externals;
 
+int windowHeight;
+int windowWidth;
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 
