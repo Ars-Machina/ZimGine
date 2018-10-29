@@ -7,7 +7,6 @@ Creating window
 GLFW swap interval = 1
 Glew has initialized
 GL_DEPTH_TEST = enabled
-loading model Engine/ModelSrc/cyborg/cyborg.obj
 loading model Engine/Modelsrc/cube/cube.3ds
 loading model Engine/Modelsrc/cube/cube.3ds
 loading model Engine/Modelsrc/cube/cube.3ds
@@ -15,4 +14,10 @@ loading model Engine/Modelsrc/cube/cube.3ds
 --------------------------------------------
 THE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE
 --------------------------------------------
+loading model Engine/ModelSrc/cube/cube.3ds
+loading model Engine/ModelSrc/worldFloor.3ds
 Done.
+Mouse Mode: Cursor Mode
+Keyboard Mode: text input
+Mouse Mode: Camera Movement
+Keyboard Mode: Camera Movement

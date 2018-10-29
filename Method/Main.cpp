@@ -7,6 +7,7 @@
 #include "Engine/World/Collisions/Collisions.h"
 #include "Engine/World/MeshSegment.h"
 #include "Engine/ExternVar.h"
+#include "Engine/Model/Object.h"
 
 using namespace std;
 using namespace glm;
@@ -59,16 +60,17 @@ int main() {
 	Mouse mainMouse = Mouse(engine.getCam());
 	Shader* engineShader = engine.getShader();
 	Shader* textShader = new Shader("Engine/Shader/textOverlayShaders/text.vs", "Engine/Shader/textOverlayShaders/text.fs");
-	Model* myModel = new Model("Engine/ModelSrc/cyborg/cyborg.obj", 0.5, vec3(-1.0f));
 	DirLight light1 = DirLight();
-	PointLight light2 = PointLight(vec3(1.0f, 1.0f, 1.0f), 0);
-	SpotLight light3 = SpotLight(vec3(1.0f, 1.0f, 1.0f), vec3(0.5f, 1.0f, 0.3f), 0);
+	PointLight light2 = PointLight(vec3(0.0f, 1.0f, 0.0f), 0);
+	SpotLight light3 = SpotLight(vec3(0.0f, 1.0f, 0.0f), vec3(0.5f, 1.0f, 0.3f), 0);
 	Cube cube1 = Cube(1, vec3(0.0f));
 	Cube cube2 = Cube(1, vec3(0.0f, 5.0f, 0.0f));
 	cout << "--------------------------------------------" << endl;
 	cout << "THE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE" << endl;
 	cout << "--------------------------------------------" << endl;
 	logFile << "--------------------------------------------\nTHE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE\n--------------------------------------------" << endl;
+	Object cube3 = Object(BZ_CUBE);
+	Object world = Object("Engine/ModelSrc/worldFloor.3ds");
 
 	/*cout << "saving cyborg.obj to txt file" << endl;
 	myModel->getMesh().SaveToFile("cyborg.txt");
@@ -79,7 +81,7 @@ int main() {
 
 	//Mesh cyborgMesh = loadMeshFromFile("cyborg.txt");
 	//cyborgMesh.SaveToFile("cyborg2.txt");
-	//setupText();
+	setupText();
 	cout << "Done." << endl;
 	logFile << "Done." << endl;
 	while (!glfwWindowShouldClose(engine.getWindow())) {
@@ -106,12 +108,15 @@ int main() {
 		light2.Draw(engineShader);
 		light3.DrawLight(engineShader);
 
-		//textShader->use();
-		//RenderText(*textShader, "cube lmaoooooooo", 0.5, 0.5, 1, vec3(0.5, 1.0, 0.0));
+		textShader->use();
+		RenderText(*textShader, "Zimgine Alpha", 0.5, 850, 1, vec3(0.5, 1.0, 0.0));
 		
 		engineShader->use();
 		//cube1.Draw(engineShader);
-		myModel->Draw(*engineShader);
+		//myModel->Draw(*engineShader);
+		world.Draw(*engineShader);
+		cube3.setPos(vec3(1.0f));
+		cube3.Draw(*engineShader);
 		//ending render
 		engine.EndRender();
 	}

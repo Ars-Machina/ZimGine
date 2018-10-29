@@ -1,8 +1,8 @@
 #include "PointLight.h"
 
-PointLight::PointLight(vec3 pos, int id) {
+PointLight::PointLight(vec3 pos, int inputID) {
 	position = pos;
-	this->id = id;
+	id = inputID;
 	setup();
 }
 

@@ -25,14 +25,6 @@ void Cube::Draw(Shader* shader) {
 	model = scale(model, vec3(size));
 	model = translate(model, vec3(position));
 	double time = glfwGetTime();
-	if (position.y<-5 && velocity.y > -20){
-		velocity.y = 0;
-		position.y = -5;
-	}
-	else {
-		velocity.y += (float)(getVelocityFunc(time) / 10000);
-		position.y += velocity.y;
-	}
 	shader->setMat4("model", model);
 	cubeModel.Draw(*shader);
 }

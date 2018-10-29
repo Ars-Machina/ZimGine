@@ -8,6 +8,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 
 class Model {
 public:
+	Model();
 	Model(const char* path);
 	Model(const char* path, double size, vec3 position);
 	~Model();

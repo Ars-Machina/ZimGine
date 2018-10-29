@@ -9,4 +9,7 @@ extern int windowHeight;
 extern int windowWidth;
 extern ofstream logFile;
 
+const static int BZ_CUBE = 1;
+
+
 #endif

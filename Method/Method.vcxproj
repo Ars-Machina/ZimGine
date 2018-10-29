@@ -134,6 +134,7 @@
     <ClCompile Include="Engine\ModelSrc\cube\Cube.cpp" />
     <ClCompile Include="Engine\ModelSrc\Triangle\Triangle.cpp" />
     <ClCompile Include="Engine\Model\Model.cpp" />
+    <ClCompile Include="Engine\Model\Object.cpp" />
     <ClCompile Include="Engine\Shader\Shader.cpp" />
     <ClCompile Include="Engine\Text\TextChar.cpp" />
     <ClCompile Include="Engine\World\FloorPlane.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Engine\ModelSrc\cube\Cube.h" />
     <ClInclude Include="Engine\ModelSrc\Triangle\Triangle.h" />
     <ClInclude Include="Engine\Model\Model.h" />
+    <ClInclude Include="Engine\Model\Object.h" />
     <ClInclude Include="Engine\Shader\Shader.h" />
     <ClInclude Include="Engine\Shader\stb_image.h" />
     <ClInclude Include="Engine\Text\TextChar.h" />

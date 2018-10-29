@@ -1,7 +1,9 @@
 #include "Model.h"
 #include "../ExternVar.h"
 
+Model::Model() {
 
+}
 
 Model::Model(const char *path) {
 	size = 1;
