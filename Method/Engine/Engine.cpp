@@ -7,7 +7,7 @@ int windowHeight;
 int windowWidth;
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
-
+void onMouse(int button, int state, int x, int y);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	cout << "Viewport Dimensions" << endl;
@@ -79,6 +79,11 @@ bool Engine::Init(const char* title) {
 	cout << "GLFW swap interval = 1" << endl;
 	logFile << "GLFW swap interval = 1" << endl;
 
+	char *argv[1] = { (char*)"Something" };
+	int argc = 1;
+
+	glutInit(&argc, argv);
+
 	//initialize glew and enable experimental
 	if (glewInit() == GLEW_OK) {
 		cout << "Glew has initialized" << endl;
@@ -97,6 +102,9 @@ bool Engine::Init(const char* title) {
 
 	//depth test
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glutMouseFunc(onMouse);
 	cout << "GL_DEPTH_TEST = enabled" << endl;
 	logFile << "GL_DEPTH_TEST = enabled" << endl;
 
@@ -109,7 +117,8 @@ void Engine::Update() {
 
 void Engine::BeginRender(vec3 lightLevel) {
 	glClearColor(0.5f*lightLevel.x, 0.5f*lightLevel.y, 0.5f*lightLevel.z, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearStencil(0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
 }
 
 void Engine::EndRender() {

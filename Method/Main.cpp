@@ -8,6 +8,7 @@
 #include "Engine/World/MeshSegment.h"
 #include "Engine/ExternVar.h"
 #include "Engine/Model/Object.h"
+#include "GL/glut.h"
 
 using namespace std;
 using namespace glm;
@@ -15,6 +16,8 @@ using namespace glm;
 void processInput(GLFWwindow* window, Camera* cam);
 unsigned int loadTexture(const char *path);
 Mesh loadMeshFromFile(const char* fileName);
+void checkMouseCollision(GLFWwindow* window);
+void checkCamCollision(GLFWwindow* window, Camera cam, Object obj);
 
 bool wireframe = false;
 float camSpeed = 0.05f;
@@ -44,9 +47,14 @@ bool tabPressed = false;
 vector<MeshSegment> floors;
 int i = 0;
 ofstream logFile;
+float mouseX;
+float mouseY;
+int stencilNum = 0;
 
 
 int main() {
+	mouseX = 0;
+	mouseY = 0;
 	logFile.open("logFile.txt");
 	Engine engine = Engine();
 	bool initialized = engine.Init("title");
@@ -71,6 +79,8 @@ int main() {
 	logFile << "--------------------------------------------\nTHE FLOORPLANE CLASS IS INEFFICIENT DO NOT USE\n--------------------------------------------" << endl;
 	Object cube3 = Object(BZ_CUBE);
 	Object world = Object("Engine/ModelSrc/worldFloor.3ds");
+	cube3.printObjectBounds();
+	world.printObjectBounds();
 
 	/*cout << "saving cyborg.obj to txt file" << endl;
 	myModel->getMesh().SaveToFile("cyborg.txt");
@@ -101,7 +111,7 @@ int main() {
 		light2.setPosition(vec3(cos(currentFrame) / 2, 0.0f, sin(currentFrame) / 2));
 		light3.setPosition(camUser->camPos);
 		light3.setDirection(camUser->camFront);
-		engineShader->setFloat("material.shininess",512.0f);
+		engineShader->setFloat("material.shininess",32.0f);
 
 
 		light1.Draw(engineShader);
@@ -114,11 +124,15 @@ int main() {
 		engineShader->use();
 		//cube1.Draw(engineShader);
 		//myModel->Draw(*engineShader);
+		glStencilFunc(GL_ALWAYS, stencilNum + 1, -1);
+		stencilNum++;
 		world.Draw(*engineShader);
 		cube3.setPos(vec3(1.0f));
+		glStencilFunc(GL_ALWAYS, stencilNum + 1, -1);
 		cube3.Draw(*engineShader);
 		//ending render
 		engine.EndRender();
+		stencilNum = 0;
 	}
 	floors.clear();
 	glfwTerminate();
@@ -147,16 +161,20 @@ void processInput(GLFWwindow* window, Camera* cam) {
 			alreadyPressed = false;
 		}
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-			cam->camPos += camSpeed * cam->camFront;
+			//cam->camPos += camSpeed * cam->camFront;
+			cam->changeVelocity('w');
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-			cam->camPos -= camSpeed * cam->camFront;
+			//cam->camPos -= camSpeed * cam->camFront;
+			cam->changeVelocity('s');
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			cam->camPos -= normalize(cross(cam->camFront, cam->camUp)) *camSpeed;
+			//cam->camPos -= normalize(cross(cam->camFront, cam->camUp)) *camSpeed;
+			cam->changeVelocity('a');
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			cam->camPos += normalize(cross(cam->camFront, cam->camUp)) *camSpeed;
+			//cam->camPos += normalize(cross(cam->camFront, cam->camUp)) *camSpeed;
+			cam->changeVelocity('d');
 		}
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(window, true);
@@ -189,6 +207,18 @@ void processInput(GLFWwindow* window, Camera* cam) {
 		if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE && tabPressed == true) {
 			tabPressed = false;
 		}
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+			float xNum = (2.0f * mouseX) / windowWidth - 1.0f;
+			float yNum = 1.0f - (2.0f * mouseY) / windowHeight;
+			float zNum = 1.0f;
+			vec3 ray_nds = vec3(xNum, yNum, zNum);
+			vec4 ray_clip = vec4(ray_nds.x, ray_nds.y, -1.0, 1.0);
+			vec4 ray_eye = inverse(projection)*ray_clip;
+			ray_eye = vec4(ray_eye.x, ray_eye.y, -1.0, 1.0);
+			vec3 ray_wor = vec3((inverse(view) * ray_eye).x, (inverse(view) * ray_eye).y, (inverse(view) * ray_eye).z);
+			ray_wor = normalize(ray_wor);
+			cout << ray_wor.x << " " << ray_wor.y << " " << ray_wor.z << endl;
+		}
 	}
 	if (keyboardMode == TEXT_INPUT) {
 		if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && tabPressed==false) {
@@ -204,6 +234,7 @@ void processInput(GLFWwindow* window, Camera* cam) {
 			tabPressed = false;
 		}
 	}
+	cam->changeVelocity('i');
 }
 
 
@@ -259,6 +290,8 @@ unsigned int loadTexture(char const * path)
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
+	mouseX = xPos;
+	mouseY = yPos;
 	if (mouseMode == CAMERA_MOVE) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		if (firstMouse)
@@ -392,4 +425,28 @@ Mesh loadMeshFromFile(const char* fileName) {
 	cout << "Done in "<<timeTaken<<" seconds" << endl;
 	logFile << "Done in " << timeTaken << " seconds" << endl;
 	return Mesh(vertexs, indexs, texs);
+}
+
+void checkMouseCollision(GLFWwindow* window) {
+
+}
+
+void onMouse(int button, int state, int x, int y) {
+	if (state != GLUT_DOWN)
+		return;
+
+	float xNum = (2.0f * x) / windowWidth - 1.0f;
+	float yNum = 1.0f - (2.0f * y) / windowHeight;
+	float zNum = 1.0f;
+	vec3 ray_nds = vec3(xNum, yNum, zNum);
+	vec4 ray_clip = vec4(ray_nds.x,ray_nds.y, -1.0, 1.0);
+	vec4 ray_eye = inverse(projection)*ray_clip;
+	ray_eye = vec4(ray_eye.x, ray_eye.y, -1.0, 1.0);
+	vec3 ray_wor = vec3((inverse(view) * ray_eye).x, (inverse(view) * ray_eye).y, (inverse(view) * ray_eye).z);
+	ray_wor = normalize(ray_wor);
+	cout << ray_wor.x << " " << ray_wor.y << " " << ray_wor.z << endl;
+}
+
+void checkCamCollision(GLFWwindow* window, Camera cam, Object obj) {
+
 }

@@ -9,6 +9,7 @@ Camera::Camera() {
 	camUp = vec3(0.0f, 1.0f, 0.0f);
 	camFront = vec3(0.0f, 0.0f, 1.0f);
 	zoom = radians(90.0f);
+	calculateVelocityDefault();
 }
 
 Camera::Camera(Shader* shader, vec3 position) {
@@ -20,6 +21,7 @@ Camera::Camera(Shader* shader, vec3 position) {
 	camUp = vec3(0.0f, 1.0f, 0.0f);
 	camFront = vec3(0.0f, 0.0f, 1.0f);
 	zoom = radians(90.0f);
+	calculateVelocityDefault();
 }
 
 mat4 Camera::getViewMatrix() {
@@ -45,4 +47,47 @@ void Camera::processMouseMovement(float xoffset, float yoffset) {
 	front.y = sin(radians(pitch));
 	front.z = sin(radians(yaw))*cos(radians(pitch));
 	camFront = normalize(front);
+}
+
+void Camera::calculateVelocityDefault() {
+	velocity = vec3(0.0f);
+	defaultAccel = 0.1f;
+	slowDownRate = -0.05f;
+	speedScalar = 0.0f;
+	vNormal = normalize(velocity);
+}
+
+void Camera::changeVelocity(char key) {
+	if (speedScalar < 0.3) {
+		if (key == 'w') {
+			velocity = camFront;
+			vNormal = normalize(velocity);
+			camPos += vNormal * vec3(0.0f + speedScalar, 0.0f + speedScalar, 0.0f + speedScalar);
+			speedScalar += defaultAccel;
+		}
+		if (key == 's') {
+			velocity = -camFront;
+			vNormal = normalize(velocity);
+			camPos += vNormal * vec3(0.0f + speedScalar,0.0f + speedScalar, 0.0f + speedScalar);
+			speedScalar += defaultAccel;
+		}
+		if (key == 'a') {
+			velocity = cross(camUp, camFront);
+			vNormal = normalize(velocity);
+			camPos += vNormal * vec3(0.0f + speedScalar, 0.0f + speedScalar, 0.0f + speedScalar);
+			speedScalar += defaultAccel;
+		}
+		if (key == 'd') {
+			velocity = -cross(camUp, camFront);
+			vNormal = normalize(velocity);
+			camPos += vNormal * vec3(0.0f + speedScalar, 0.0f + speedScalar, 0.0f + speedScalar);
+			speedScalar += defaultAccel;
+		}
+	}
+	if (key == 'i') {
+		if (speedScalar > 0) {
+			camPos += vNormal * vec3(0.0f + speedScalar, 0.0f + speedScalar, 0.0f + speedScalar);
+			speedScalar += slowDownRate;
+		}
+	}
 }

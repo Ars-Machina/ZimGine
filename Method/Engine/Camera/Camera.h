@@ -13,6 +13,9 @@ public:
 	float sensitivity = 0.1f;
 	float yaw = -90.0f;
 	float pitch = 0.0f;
+	float defaultAccel;
+	float slowDownRate;
+	float speedScalar;
 	Shader shader;
 	vec3 camPos;
 	vec3 camTarget;
@@ -22,7 +25,11 @@ public:
 	vec3 camUp;
 	vec3 camFront;
 	float zoom;
+	vec3 vNormal;
+	vec3 velocity;
 
+	void calculateVelocityDefault();
+	void changeVelocity(char key);
 	Camera();
 	Camera(Shader*, vec3);
 	mat4 getViewMatrix();
